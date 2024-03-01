@@ -1,0 +1,21 @@
+nginx syslog wrapper
+--------------------
+
+POC to adapt nginx rfc3164 syslog messages to rfc5424 so they can be properly
+parsed by syslog receiver rfc5424 only capable.
+
+Only supports listenning and sending to UDP currently. You can change the
+IP:port with the following flags:
+
+  -listen "127.0.0.1:5140"
+  -send-to "127.0.0.1:514"
+
+Either works standlone, or as a wrapper for nginx, an extra args passed will
+be run as a subprocess.
+
+  ./syslog-wrapper /usr/sbin/nginx -g 'daemon off;'
+
+Example nginx config:
+
+  log_format structured '[user@1234 req_uri="$request_uri" meth="$request_method" status="$status" h_ua="$http_user_agent"]';
+  access_log syslog:server=127.0.0.1:5140,facility=local5,severity=info,tag=www structured;
